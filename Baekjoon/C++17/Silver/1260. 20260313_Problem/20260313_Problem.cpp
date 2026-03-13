@@ -1,44 +1,44 @@
 #include <iostream>
+#include <algorithm>
 #include <vector>
 #include <queue>
 
 using namespace std;
 
-void DFS(int V, int N, vector<bool>& visited, const vector<vector<int>>& matrix)
+void DFS(int V, vector<bool>& visited, vector<vector<int>>& graph)
 {
     visited[V] = true;
     cout << V << " ";
     
-    for (int i = 1; i <= N; ++i)
+    for (int u : graph[V])
     {
-        if (matrix[V][i] == 1 && !visited[i])
+        if (!visited[u])
         {
-            DFS(i, N, visited, matrix);
+            DFS(u, visited, graph);
         }
     }
 }
 
-void BFS(int V, int N, vector<bool>& visited, const vector<vector<int>>& matrix)
+void BFS(int V, vector<bool>& visited, vector<vector<int>>& graph)
 {
-    queue<int> Q;
-    visited[V] = true;
-    Q.push(V);
-    
-    while (!Q.empty())
-    {
-        int u = Q.front(); 
-        Q.pop();
-        cout << u << " ";
-        
-        for (int i = 1; i <= N; ++i)
-        {
-            if (matrix[u][i] == 1 && !visited[i])
+       queue<int> Q;
+       visited[V] = true;
+       Q.push(V);
+       
+       while (!Q.empty())
+       {
+            int u = Q.front(); Q.pop();
+            cout << u << " ";
+            
+            for (int w : graph[u])
             {
-                visited[i] = true;
-                Q.push(i);
+                if (!visited[w])
+                {
+                    visited[w] = true;
+                    Q.push(w);
+                }
             }
-        }
-    }
+       }
 }
 
 int main()
@@ -46,7 +46,7 @@ int main()
     int N, M, V;
     cin >> N >> M >> V;
     
-    vector<vector<int>> matrix(N + 1, vector<int>(N + 1, 0));
+    vector<vector<int>> graph(N + 1);
     vector<bool> visited(N + 1, false);
     
     for (int i = 0; i < M; ++i)
@@ -54,16 +54,20 @@ int main()
         int start, end;
         cin >> start >> end;
         
-        matrix[start][end] = 1;
-        matrix[end][start] = 1;
+        graph[start].push_back(end);
+        graph[end].push_back(start);
     }
-   
-    DFS(V, N, visited, matrix);
+    
+    for (int i = 1; i <= N; ++i)
+    {
+        sort(graph[i].begin(), graph[i].end());
+    }
+    
+    DFS(V, visited, graph);
     cout << "\n";
     
     visited.assign(N + 1, false);
-    
-    BFS(V, N, visited, matrix);
+    BFS(V, visited, graph);
 
     return 0;
 }
