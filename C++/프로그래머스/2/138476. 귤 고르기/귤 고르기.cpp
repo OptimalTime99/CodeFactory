@@ -6,26 +6,26 @@ using namespace std;
 
 int solution(int k, vector<int> tangerine) {
     int answer = 0;
-    unordered_map<int, int> counts;
+    unordered_map<int, int> tangerineMap;
 
     // 1. 빈도수 계산
     for (int size : tangerine) {
-        counts[size]++;
+        tangerineMap[size]++;
     }
 
-    // 2. 빈도수만 벡터에 추출
-    vector<int> frequencies;
-    for (auto const& [size, count] : counts) {
-        frequencies.push_back(count);
+    // 2. {빈도수, 귤크기} 쌍으로 저장하여 정렬
+    vector<pair<int, int>> v;
+    for(auto& it : tangerineMap) {
+        v.push_back({it.second, it.first});
     }
 
     // 3. 내림차순 정렬
-    sort(frequencies.begin(), frequencies.end(), greater<int>());
+    sort(v.rbegin(), v.rend());
 
     // 4. k가 0 이하가 될 때까지 가장 큰 빈도부터 차감
-    for (int f : frequencies) {
+    for (auto const& [key, value] : v) {
         answer++;
-        k -= f;
+        k -= key;
         if (k <= 0) break;
     }
 
